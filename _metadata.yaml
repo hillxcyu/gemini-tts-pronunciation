@@ -1,0 +1,59 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+file_type: demo
+type: application
+title: Multilingual and Brand Terminology Pronunciation Studio with Gemini TTS and Chirp 3 HD
+thumbnail_summary: Compare Gemini 3.8 TTS and Chirp 3 HD side by side to enforce phoneme-accurate brand names, acronyms, and multilingual code-switching across Spanish, Portuguese, and Mandarin.
+purpose: |
+  Built for **Heads of Localization, Digital Experience VPs, Contact Center Architects, and Global Product Marketing Leads**, this interactive studio demonstrates how enterprises eliminate brand and acronym mispronunciations across multilingual customer touchpoints.
+
+  During a live customer pitch, sellers walk buyers through real-time automotive and technology scripts in Spanish, Portuguese, and Mandarin. Viewers toggle between Raw, Standard English, and Native Language modes, edit a live custom terminology lexicon, and hear how Gemini 3.8 TTS and Chirp 3 HD deliver consistent brand pronunciation on the very first synthesis pass.
+business_value: |
+  * **Eliminate Studio Dubbing Bottlenecks:** Replaces manual voice-actor re-recordings for product launches and software updates with instant self-service pronunciation governance, cutting localization turnaround from weeks to seconds.
+  * **Protect Global Brand Equity:** Ensures flagship product names, partner brands, and technical acronyms render accurately across Spanish, Portuguese, and Mandarin markets without jarring voice switches.
+  * **Reduce Costly IVR & Media Revisions:** Empowers localization and engineering teams to test, preview, and standardize phonetic rules in a single workbench before deploying to production contact centers or digital channels.
+technical_value: |
+  * **Dual-Track Normalization for Gemini 3.8 TTS:** Served via the Vertex AI global endpoint, keeping clean display subtitles separate from phonetically respelled synthesis tracks while preserving expressive style prompts and inline pause control.
+  * **Deterministic Phonetic Governance on Chirp 3 HD:** Integrates Cloud Text-to-Speech with automated IPA, tone-numbered Pinyin lexicons, and synchronous SSML mid-sentence voice switching using a unified voice persona.
+  * **Production-Ready Serverless Deployment:** Packaged on Cloud Run behind an External HTTPS Application Load Balancer, Serverless NEG, and Identity-Aware Proxy with least-privilege IAM and hash-pinned Python dependencies.
+owner: xcyu
+team_owner: 1670033130013
+demo_guide: https://docs.google.com/document/d/1441soCUrBs2CqxvagRYRa6DZFiwTFDYkdmli0-Zk11w/edit
+products:
+  - vertex_ai
+  - text_to_speech
+  - cloud_run
+  - artifact_registry
+industries:
+  - manufacturing
+  - media_entertainment
+  - retail
+  - telecommunications
+artifacts:
+  - title: Live Interactive Demo Application
+
+    type: live_application
+
+    link: https://gemini-tts-pronunciation-440790012685.asia-east1.run.app/
+
+  - title: GitHub Source Repository
+
+    type: code_repo
+
+    link: https://github.com/hillxcyu/gemini-tts-pronunciation
+featured_artifact_title: Live Interactive Demo Application
+# images:
+#   - https://storage.cloud.google.com/<bucket>/<hero-card>.png
+# click_to_deploy_path: <demo_id>-<slug>/tree/main/click-to-deploy

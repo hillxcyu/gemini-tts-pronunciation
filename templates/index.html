@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multilingual &amp; Custom Terminology Pronunciation Studio — Gemini 3.8 TTS &amp; Chirp 3 HD</title>
+  <meta
+    name="description"
+    content="Interactive studio comparing Gemini 3.8 TTS dual-track code-switching and Chirp 3 HD fine-grained IPA/Pinyin/SSML phonetic control across Spanish, Portuguese, and Chinese."
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;family=Noto+Sans+SC:wght@400;500;600;700&amp;display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <h1 data-i18n="headerTitle">Multilingual &amp; Custom Terminology Pronunciation Studio</h1>
+        <p class="subtitle" data-i18n="headerSubtitle">
+          Gemini 3.8 TTS (Vertex AI Global · Dual-Track Normalization &amp; Native Code-Switching)
+          &amp; Chirp 3 HD (Cloud TTS · IPA / Pinyin &amp; SSML Phonetics)
+        </p>
+      </div>
+
+      <div class="header-controls">
+        <div class="ui-lang-wrapper">
+          <span class="ui-lang-label" data-i18n="uiLangLabel">UI</span>
+          <div
+            class="segmented-control ui-lang-switch"
+            id="ui-lang-switcher"
+            role="group"
+            aria-label="Interface language selector"
+          >
+            <button
+              type="button"
+              id="ui-lang-en"
+              class="seg-btn active"
+              data-ui-lang="en"
+              aria-pressed="true"
+            >
+              EN
+            </button>
+            <button
+              type="button"
+              id="ui-lang-zh"
+              class="seg-btn"
+              data-ui-lang="zh-CN"
+              aria-pressed="false"
+            >
+              CN
+            </button>
+          </div>
+        </div>
+
+        <div class="gcp-meta" id="gcp-meta-badge" aria-live="polite">
+          <span class="meta-label">gcloud:</span>
+          <code id="gcp-config-name">default</code>
+          <span class="meta-sep">·</span>
+          <code id="gcp-project-id">your-project-id</code>
+          <span class="meta-sep">·</span>
+          <code id="gcp-location">global</code>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <!-- Top Control Strip -->
+    <section class="control-bar" aria-label="Primary synthesis configuration">
+      <div class="control-block">
+        <label class="control-heading" id="language-tabs-label" data-i18n="ctrlMainLang">
+          1. Main Language
+        </label>
+        <div class="segmented-control" id="language-tabs" role="tablist" aria-labelledby="language-tabs-label">
+          <!-- Populated dynamically: Spanish, Portuguese, Chinese -->
+        </div>
+      </div>
+
+      <div class="control-block">
+        <label class="control-heading" for="locale-select" data-i18n="ctrlRegionalLocale">
+          Regional Locale
+        </label>
+        <select id="locale-select" class="select-input"></select>
+      </div>
+
+      <div class="control-block">
+        <label class="control-heading" id="pron-mode-label" data-i18n="ctrlPronMode">
+          2. Brand, Terminology &amp; Acronym Pronunciation
+        </label>
+        <div class="segmented-control" id="pronunciation-mode-tabs" role="radiogroup" aria-labelledby="pron-mode-label">
+          <button
+            type="button"
+            id="mode-btn-english"
+            class="seg-btn active"
+            data-mode="english"
+            data-i18n="modeEnglish"
+            role="radio"
+            aria-checked="true"
+          >
+            Standard English
+          </button>
+          <button
+            type="button"
+            id="mode-btn-native"
+            class="seg-btn"
+            data-mode="native"
+            data-i18n="modeNative"
+            role="radio"
+            aria-checked="false"
+          >
+            Native Language
+          </button>
+          <button
+            type="button"
+            id="mode-btn-raw"
+            class="seg-btn"
+            data-mode="raw"
+            data-i18n="modeRaw"
+            role="radio"
+            aria-checked="false"
+          >
+            Raw (Uncontrolled)
+          </button>
+        </div>
+      </div>
+
+      <div class="control-block">
+        <label class="control-heading" for="voice-select" data-i18n="ctrlVoicePersona">
+          3. Prebuilt Voice Persona
+        </label>
+        <select id="voice-select" class="select-input"></select>
+      </div>
+
+      <div class="control-block">
+        <label class="control-heading" for="engine-select" data-i18n="ctrlSynthesisMode">
+          4. Synthesis Mode
+        </label>
+        <select id="engine-select" class="select-input">
+          <option value="compare" data-i18n="engineCompare" selected>
+            Compare Both (Gemini 3.8 + Chirp 3 HD)
+          </option>
+          <option value="gemini" data-i18n="engineGeminiOnly">Gemini 3.8 TTS Only</option>
+          <option value="chirp3_hd" data-i18n="engineChirpOnly">Chirp 3 HD Only</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Main Workbench Grid -->
+    <div class="workbench-grid">
+      <!-- Start Column: Script Input, Fine Controls & Compiler Preview -->
+      <section class="panel input-panel" aria-labelledby="script-section-title">
+        <div class="panel-header">
+          <div>
+            <h2 id="script-section-title" data-i18n="scriptPanelTitle">
+              Multilingual Script &amp; Phonetic Compiler
+            </h2>
+            <p class="panel-caption" data-i18n-html="scriptPanelCaptionHtml">
+              Edit code-switched copy or select a preset featuring <strong>Voltara EX2</strong> and technical acronyms.
+            </p>
+          </div>
+          <div class="preset-group">
+            <label class="sr-only" for="preset-select" data-i18n="presetLabel">Sample Preset</label>
+            <select id="preset-select" class="select-input select-compact"></select>
+          </div>
+        </div>
+
+        <div class="editor-wrapper">
+          <label class="field-label" for="script-textarea" data-i18n="displayTextLabel">
+            Display Text (UI / Subtitle Track)
+          </label>
+          <textarea
+            id="script-textarea"
+            class="script-textarea"
+            rows="4"
+            spellcheck="false"
+          ></textarea>
+        </div>
+
+        <div class="highlight-box">
+          <div class="highlight-header">
+            <span class="field-label" data-i18n="detectedTermsLabel">
+              Detected Custom Terms &amp; Brand Spans
+            </span>
+            <span class="match-counter" id="match-counter-badge"></span>
+          </div>
+          <div id="highlighted-preview" class="highlighted-text"></div>
+        </div>
+
+        <!-- Engine-Specific Fine Controls -->
+        <div class="fine-controls-grid">
+          <div class="fine-group">
+            <div class="fine-title" data-i18n="geminiParamsTitle">Gemini 3.8 TTS Parameters</div>
+            <label class="field-label" for="gemini-model-select" data-i18n="modelTierLabel">
+              Model Tier
+            </label>
+            <select id="gemini-model-select" class="select-input"></select>
+
+            <label class="field-label" for="gemini-style-input" data-i18n-html="styleFieldLabelHtml">
+              Turn Delivery Style (<code>speechMetadata.style</code>)
+            </label>
+            <input
+              type="text"
+              id="gemini-style-input"
+              class="text-input"
+              placeholder="Warm, polished automotive narrator..."
+            />
+
+            <label class="checkbox-row" for="insert-pauses-checkbox">
+              <input type="checkbox" id="insert-pauses-checkbox" />
+              <span data-i18n-html="insertPausesLabelHtml">
+                Insert micro-pause tags before custom terms (<code>&lt;short pause&gt;</code> / <code>&lt;break&gt;</code>)
+              </span>
+            </label>
+          </div>
+
+          <div class="fine-group">
+            <div class="fine-title" data-i18n="chirpParamsTitle">Chirp 3 HD Phonetic Controls</div>
+            <label class="field-label" for="chirp-mode-select" data-i18n="chirpMechanismLabel">
+              Phonetic Override Mechanism
+            </label>
+            <select id="chirp-mode-select" class="select-input">
+              <option value="ssml" data-i18n="chirpOptSsml" selected>
+                SSML (&lt;phoneme ipa&gt; + &lt;say-as&gt; + &lt;voice&gt; Switch)
+              </option>
+              <option value="custom_pronunciations" data-i18n="chirpOptCustomPron">
+                CustomPronunciations API (IPA / X-SAMPA / Pinyin Lexicon)
+              </option>
+            </select>
+
+            <div class="slider-header">
+              <label class="field-label" for="speaking-rate-range" data-i18n="speakingRateLabel">
+                Chirp 3 HD Speaking Rate
+              </label>
+              <output id="speaking-rate-value" for="speaking-rate-range" class="mono-val">1.00×</output>
+            </div>
+            <input
+              type="range"
+              id="speaking-rate-range"
+              min="0.6"
+              max="1.5"
+              step="0.05"
+              value="1.0"
+            />
+            <p class="helper-note" data-i18n-html="chirpHelperNoteHtml">
+              Chirp 3 HD supports deterministic IPA (<code>es-*</code>, <code>pt-BR</code>), tone-numbered Pinyin (<code>cmn-CN</code>), and mid-sentence <code>&lt;voice&gt;</code> switching.
+            </p>
+          </div>
+        </div>
+
+        <div id="compiler-notes" class="notes-banner hidden" role="status"></div>
+
+        <div class="action-row">
+          <button type="button" id="synthesize-btn" class="primary-btn" data-i18n="synthesizeBtn">
+            Synthesize &amp; Compare Audio
+          </button>
+          <span id="synthesis-status" class="status-text" aria-live="polite"></span>
+        </div>
+
+        <!-- Live Compiled Output Diff -->
+        <div class="compiled-diff-grid">
+          <div class="compiled-box">
+            <div class="compiled-box-header">
+              <span class="engine-tag tag-gemini">Gemini 3.8 TTS</span>
+              <span class="compiled-title" data-i18n-html="geminiCompiledTitleHtml">
+                Normalized <code>parts[].text</code> Transcript
+              </span>
+            </div>
+            <pre id="gemini-compiled-preview" class="code-preview"></pre>
+          </div>
+
+          <div class="compiled-box">
+            <div class="compiled-box-header">
+              <span class="engine-tag tag-chirp">Chirp 3 HD</span>
+              <span class="compiled-title" id="chirp-compiled-label">Compiled SSML / CustomPronunciations</span>
+            </div>
+            <pre id="chirp-compiled-preview" class="code-preview"></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- End Column: Side-by-Side Audio Output -->
+      <section class="panel output-panel" aria-labelledby="audio-section-title">
+        <div class="panel-header">
+          <div>
+            <h2 id="audio-section-title" data-i18n="audioPanelTitle">Synthesized Audio Comparison</h2>
+            <p class="panel-caption" data-i18n-html="audioPanelCaptionHtml">
+              Listen to how each engine renders <strong>Voltara EX2</strong>, partner brands, and technical acronyms under the selected pronunciation mode.
+            </p>
+          </div>
+        </div>
+
+        <div id="error-banner" class="error-banner hidden" role="alert"></div>
+
+        <div class="audio-cards-stack">
+          <!-- Gemini 3.8 TTS Result Card -->
+          <article class="audio-card" id="gemini-result-card">
+            <div class="audio-card-top">
+              <div>
+                <div class="card-title-row">
+                  <span class="engine-tag tag-gemini" data-i18n="geminiBadge">Vertex AI · Global</span>
+                  <h3 id="gemini-card-heading">Gemini 3.8 Flash TTS</h3>
+                </div>
+                <p class="card-submeta" id="gemini-card-meta" data-i18n="geminiCardMeta">
+                  Dual-track pre-TTS normalization + native multimodal code-switching
+                </p>
+              </div>
+              <div class="metrics-row" id="gemini-metrics"></div>
+            </div>
+
+            <div class="player-slot" id="gemini-player-slot">
+              <div class="empty-player" data-i18n="geminiEmptyPlayer">
+                Click “Synthesize &amp; Compare Audio” to generate Gemini 3.8 TTS audio.
+              </div>
+            </div>
+            <canvas id="gemini-waveform" class="waveform-canvas hidden" width="640" height="56"></canvas>
+
+            <details class="payload-details" id="gemini-payload-details">
+              <summary data-i18n-html="geminiPayloadSummaryHtml">
+                Inspect Vertex AI <code>generateContent</code> Request Payload
+              </summary>
+              <pre id="gemini-payload-json" class="code-preview json-preview"></pre>
+            </details>
+          </article>
+
+          <!-- Chirp 3 HD Result Card -->
+          <article class="audio-card" id="chirp-result-card">
+            <div class="audio-card-top">
+              <div>
+                <div class="card-title-row">
+                  <span class="engine-tag tag-chirp" data-i18n="chirpBadge">Cloud Text-to-Speech</span>
+                  <h3 id="chirp-card-heading">Chirp 3 HD</h3>
+                </div>
+                <p class="card-submeta" id="chirp-card-meta" data-i18n="chirpCardMeta">
+                  Deterministic IPA / Pinyin phonemes &amp; synchronous SSML control
+                </p>
+              </div>
+              <div class="metrics-row" id="chirp-metrics"></div>
+            </div>
+
+            <div class="player-slot" id="chirp-player-slot">
+              <div class="empty-player" data-i18n="chirpEmptyPlayer">
+                Click “Synthesize &amp; Compare Audio” to generate Chirp 3 HD audio.
+              </div>
+            </div>
+            <canvas id="chirp-waveform" class="waveform-canvas hidden" width="640" height="56"></canvas>
+
+            <details class="payload-details" id="chirp-payload-details">
+              <summary data-i18n-html="chirpPayloadSummaryHtml">
+                Inspect Cloud TTS <code>text:synthesize</code> Request Payload
+              </summary>
+              <pre id="chirp-payload-json" class="code-preview json-preview"></pre>
+            </details>
+          </article>
+        </div>
+
+        <!-- Architectural Comparison Reference -->
+        <div class="architecture-summary">
+          <h3 data-i18n="archTitle">When to Use Gemini 3.8 TTS vs. Chirp 3 HD</h3>
+          <ul class="arch-list">
+            <li data-i18n-html="archBulletGeminiHtml">
+              <strong>Gemini 3.8 TTS (<code>gemini-3.8-flash-tts</code> / <code>lite</code>):</strong>
+              Best for seamless intra-sentence code-switching across 130 languages, expressive acting via <code>speechMetadata.style</code>, inline vocal pauses (<code>&lt;short pause&gt;</code>), and continuous speaker prosody using dual-track respelling.
+            </li>
+            <li data-i18n-html="archBulletChirpHtml">
+              <strong>Chirp 3 HD (<code>&lt;locale&gt;-Chirp3-HD-&lt;Voice&gt;</code>):</strong>
+              Best when strict phoneme-level governance is required via <code>CustomPronunciations</code> (Greco IPA / X-SAMPA for <code>es-*</code> &amp; <code>pt-BR</code>; tone-numbered Pinyin for <code>cmn-CN</code>) or SSML <code>&lt;phoneme&gt;</code>, <code>&lt;say-as&gt;</code>, and <code>&lt;voice&gt;</code> tags.
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <!-- Bottom Full-Width Section: Editable Custom Terminology & Phonetics Lexicon -->
+    <section class="panel glossary-panel" aria-labelledby="glossary-section-title">
+      <div class="panel-header">
+        <div>
+          <h2 id="glossary-section-title" data-i18n="glossaryPanelTitle">
+            Custom Terminology, Brand &amp; Acronym Lexicon
+          </h2>
+          <p class="panel-caption" id="glossary-panel-caption"></p>
+        </div>
+        <div class="glossary-actions">
+          <button type="button" id="add-term-btn" class="secondary-btn" data-i18n="addTermBtn">
+            + Add Custom Term
+          </button>
+          <button type="button" id="reset-glossary-btn" class="ghost-btn" data-i18n="resetGlossaryBtn">
+            Reset Defaults
+          </button>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table class="glossary-table" id="glossary-table">
+          <thead>
+            <tr>
+              <th scope="col" data-i18n="thActive">Active</th>
+              <th scope="col" data-i18n="thTerm">Term / Acronym</th>
+              <th scope="col" data-i18n="thType">Type</th>
+              <th scope="col" data-i18n="thEngGemini">Standard English (Gemini Respelling)</th>
+              <th scope="col" data-i18n="thEngChirp">Standard English (Chirp IPA / SSML)</th>
+              <th scope="col" data-i18n="thNatGemini">Native Language (Gemini Respelling)</th>
+              <th scope="col" data-i18n="thNatChirp">Native Language (Chirp IPA / Pinyin)</th>
+              <th scope="col" data-i18n="thActions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="glossary-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
